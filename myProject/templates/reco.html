@@ -1,0 +1,182 @@
+<!doctype html>
+<html model_id="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="https://inbox-america-data.com/img/favicon.ico">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <!-- Custom styles for this template -->
+    <link href="{{url_for('static', filename='css/dropdown.css')}}" rel="stylesheet">
+  </head>
+  <body>
+    <main role="main">
+      <div class="container">
+        <div class="alert alert-secondary" role="alert">
+          <h3>Recommendations for client #{{ client_id | int}}</h3>
+          <hr>
+        </div>
+        <div  role="alert" >
+          <h4 class="alert-heading" >Purchase history</h4>
+
+          <table class="table table-bordered">
+            <thead style="background: #ABCF39;color: white">
+              <tr>
+                {%- for column_name, column_display in history_columns %}
+                  <th>{{ column_display }}</th>
+                {%- endfor %}
+              </tr>
+            </thead>
+            <tbody>
+              {%- for row_id, row in history_df.iterrows() %}
+                <tr>
+                  {%- for column_name, column_display in history_columns %}
+                    <td>{{ row[column_name] }}</td>
+                  {%- endfor %}
+                </tr>
+              {%- endfor %}
+            </tbody>
+          </table>
+          <hr>
+        </div>
+        <div class="album py-5 bg-light">
+          <div class="container">
+            {% for batch in recomm_df.iterrows() | batch(3) %}
+              <div class="row">
+                {% for row_id, row in batch %}
+                  <div class="col-md-4" id="cat_{{loop.index}}">
+                    <h3 align="center">{{ row['CAT1']}}</h3>
+                    <div class="card mb-4 box-shadow">
+                      <img class="card-img-top"
+                        data-src="holder.js/100px225?theme=thumb&bg=55595c&fg=eceeef&text={{row['prod_family'] }}:
+                          {{ row['prod_name'] }}" alt="Card image cap"
+                      >
+                      <div class="card-body">
+                        <!-- <div class="form-group">
+                          <form name="SelectRec" action="/db_add">
+                            <label>Model ID</label>
+                            <input name="item", value="{{ row['model_id']}}" readonly/>
+                            </br>
+                            <input type="submit" value="Confirm" />
+                          </form>
+                        </div>-->
+                        <br/>
+                        <ul id="menu">
+                          <li><a class="btn btn-default" href="#" style="background: #ABCF39;color: white;" >Make New Suggestion(s)</a>
+                            <ul class="drop list-group">
+                              {% for key, value in df4.iterrows() %}
+                                {% if value.CAT1 ==row['CAT1'] %}
+                                <li class="list-group-item"><a href="#">{{ value.prod_family }}</a>
+                                  <ul class="list-group">
+                                    <li class="list-group-item">
+                                      <a href="#">{{value.prod_subfamily[0] }} </a>
+                                      <ul id="cat_sug" class="list-group">
+                                        {% for thing2 in list2 %}
+                                          {% if value.prod_subfamily[0] ==thing2[0] %}
+                                            <li class="list-group-item"><a href="#" name="model_id" data-val="{{ thing2[1][0] }}">{{ thing2[1][0] }}</a></li>
+                                            <li class="list-group-item"><a href="#" name="model_id" data-val="{{ thing2[1][1] }}">{{ thing2[1][1] }}</a></li>
+                                            <li class="list-group-item"><a href="#" name="model_id" data-val="{{ thing2[1][2] }}">{{ thing2[1][2] }}</a></li>
+                                          {% endif %}
+                                        {% endfor %}
+                                      </ul>
+                                    </li>
+                                    {% if value.prod_subfamily[1] %}
+                                      <li class="list-group-item">
+                                        <a href="#">{{value.prod_subfamily[1] }}</a>
+                                        <ul id="cat_sug" class="list-group">
+                                          {% for thing2 in list2 %}
+                                            {% if value.prod_subfamily[1] ==thing2[0] %}
+                                              <li class="list-group-item"><a href="#" name="model_id_2" data-val="{{ thing2[1][0] }}">{{ thing2[1][0] }}</a></li>
+                                              <li class="list-group-item"><a href="#" name="model_id_2" data-val="{{ thing2[1][1] }}">{{ thing2[1][1] }}</a></li>
+                                              <li class="list-group-item"><a href="#" name="model_id_2" data-val="{{ thing2[1][2] }}">{{ thing2[1][2] }}</a></li>
+                                            {% endif %}
+                                          {% endfor %}
+                                        </ul>
+                                      </li>
+                                    {% endif %}
+                                    {% if value.prod_subfamily[2] %}
+                                      <li class="list-group-item">
+                                        <a href="#">{{value.prod_subfamily[2] }}</a>
+                                        <ul id="cat_sug" class="list-group">
+                                          {% for thing2 in list2 %}
+                                            {% if value.prod_subfamily[2] ==thing2[0] %}
+                                              <li class="list-group-item"><a href="#" name="model_id_3" data-val="{{ thing2[1][0] }}">{{ thing2[1][0] }}</a></li>
+                                              <li class="list-group-item"><a href="#" name="model_id_3" data-val="{{ thing2[1][1] }}">{{ thing2[1][1] }}</a></li>
+                                              <li class="list-group-item"><a href="#" name="model_id_3" data-val="{{ thing2[1][2] }}">{{ thing2[1][2] }}</a></li>
+                                            {% endif %}
+                                          {% endfor %}
+                                        </ul>
+                                      </li>
+                                    {% endif %}
+                                  </ul>
+                                {% endif %}
+                              {% endfor %}
+                             <!--  <li class="list-group-item"><a href="#">has sub list</a>
+                                <ul class="list-group">
+                                  <li class="list-group-item"><a href="#">Sub Item 1</a></li>
+                                  <li class="list-group-item"><a href="#">Sub Item 2</a>
+                                    <ul class="list-group">
+                                      <li class="list-group-item"><a href="#">Sub item 3</a></li>
+                                      <li class="list-group-item"><a href="#">Sub item 4</a></li>
+                                    </ul>
+                                  </li>
+                                </ul>
+                              </li>
+                            </ul>
+                          </li>
+                        </ul>   -->
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            {% endfor %}
+            </br>
+
+            <br>
+            <form class="text-center" action="/db_add" method="POST" style = "text-align:left">
+              <input type="hidden" name="client_id" value="{{ client_id | int }}" readonly>
+              <input style = "margin-left:40px;" type="text" name="suggestion1" value="{{prod[0]}}" readonly>
+              <input style = "margin-left:208px;" type="text" name="suggestion2" value="{{prod[1]}}" readonly>
+              <input style = "margin-left:208px;" type="text" name="suggestion3" value="{{prod[2]}}" readonly>
+              <input style = "margin-left:20px"  class="btn btn-success" type="submit"  value="Validate">
+              <!-- <input style = "margin-left:430px;margin-top:20px;"  class="btn btn-success" type="submit"  value="Validate New Suggestion(s)"> -->
+            </form>
+            </br>
+            </br>
+            </br>
+            <div  align="center">
+            <a class="btn btn-success" href="/metrics" style="margin-right:20px;">View performance metrics</a>
+            <a class="btn btn-success" href="/getAllReco" style="margin-right:20px;">View All Recommendations</a>
+            <a class="btn btn-primary" href="/"  align="center" role="button">Back to homepage</a>
+          </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    </br>
+    <footer>
+      <div class="text-muted" style="margin-top:100px;">
+        <p class="text-center">Copyright Inbox America Consulting Service v3.1| 2018-2020 </p>
+        <p class="text-center">Visit our website at :<a href="https://www.inbox-america.com"> inbox-america.com</a>.</p>
+      </div>
+    </footer>
+
+   <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <!-- JQuery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <!-- Popper.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/holder/2.9.4/holder.js"></script>
+    <script src="{{url_for('static', filename='js/suggestions.js')}}" type="text/javascript"></script>
+   </body>
+</html>
